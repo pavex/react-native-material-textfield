@@ -50,7 +50,8 @@ export default class TextField extends PureComponent {
     textColor: PropTypes.string,
     baseColor: PropTypes.string,
 
-    label: PropTypes.string.isRequired,
+//    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     title: PropTypes.string,
 
     characterRestriction: PropTypes.number,
@@ -80,7 +81,7 @@ export default class TextField extends PureComponent {
 
     let { value, error, fontSize } = this.props;
 
-    this.mounted = false;
+    this._mounted = false;
     this.state = {
       text: value,
 
@@ -112,11 +113,11 @@ export default class TextField extends PureComponent {
   }
 
   componentDidMount() {
-    this.mounted = true;
+    this._mounted = true;
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this._mounted = false;
   }
 
   componentWillUpdate(props, state) {
@@ -130,7 +131,7 @@ export default class TextField extends PureComponent {
           duration: animationDuration,
         })
         .start(() => {
-          if (this.mounted) {
+          if (this._mounted) {
             this.setState((state, { error }) => ({ error }));
           }
         });
@@ -166,6 +167,14 @@ export default class TextField extends PureComponent {
       defaultValue;
   }
 
+  setValue(value) {
+    this.setState({ text: value });
+  }
+
+  getValue() {
+    return this.value();
+  }
+
   isFocused() {
     return this.input.isFocused();
   }
@@ -173,17 +182,14 @@ export default class TextField extends PureComponent {
   isRestricted() {
     let { characterRestriction } = this.props;
     let { text = '' } = this.state;
-
     return characterRestriction < text.length;
   }
 
   onFocus() {
     let { onFocus } = this.props;
-
     if ('function' === typeof onFocus) {
       onFocus();
     }
-
     this.setState({ focused: true, receivedFocus: true });
   }
 
@@ -311,14 +317,19 @@ export default class TextField extends PureComponent {
         outputRange: [2, StyleSheet.hairlineWidth, 2],
       });
 
+    let initialHeight = !!label ? 40 : 24;
+    let paddingTop = !!label ? 32 : 16;
+
     let containerStyle = {
+      paddingTop,
+
       ...(disabled?
         { overflow: 'hidden' }:
         { borderBottomColor, borderBottomWidth }),
 
       ...(props.multiline?
-        { height: 40 + height }:
-        { height: 40 + fontSize * 1.5 }),
+        { height: initialHeight + height }:
+        { height: initialHeight + fontSize * 1.5 }),
     };
 
     let inputStyle = {
@@ -395,7 +406,7 @@ export default class TextField extends PureComponent {
         <Animated.View style={[styles.container, containerStyle]}>
           {disabled && <Line type='dotted' color={baseColor} />}
 
-          <Label {...labelProps}>{label}</Label>
+          {!!label ? <Label {...labelProps}>{label}</Label> : null}
 
           <View style={styles.row}>
             {this.renderAffix('prefix', active, focused)}
