@@ -24,7 +24,7 @@ export default class TextField extends PureComponent {
     blurOnSubmit: true,
     editable: true,
 
-    animationDuration: 225,
+    animationDuration: 128,
 
     fontSize: 16,
     labelFontSize: 12,
@@ -50,7 +50,6 @@ export default class TextField extends PureComponent {
     textColor: PropTypes.string,
     baseColor: PropTypes.string,
 
-//    label: PropTypes.string.isRequired,
     label: PropTypes.string,
     title: PropTypes.string,
 
